@@ -1,6 +1,6 @@
 {
   "name": "go-ipfs-wrapper",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "",
   "main": "dist/index",
   "typings": "dist/index",
@@ -20,6 +20,7 @@
   },
   "files": [
     "dist/index.js",
-    "dist/lib"
+    "dist/lib",
+    "bin"
   ]
 }
