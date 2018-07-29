@@ -33,7 +33,6 @@ export class IpfsProcess extends EventEmitter {
       if (!fs.existsSync(this._ipfsPath)) {
         // if ipfs directory does not exists,
         // create a new ipfs directory
-        console.log(this._localEnv);
         const ipfsProc = spawn(ipfsPath, ['init'], { env: this._localEnv });
 
         ipfsProc.on('exit', code => {

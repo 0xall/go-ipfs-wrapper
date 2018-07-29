@@ -14,11 +14,11 @@
       "./src/types"
     ],
     "paths": {
-      "*": ["./lib/index.ts"]
+      "*": ["./src/lib/index.ts"]
     }
   },
   "files": [
-    "./index.ts"
+    "./src/index.ts"
   ],
   "exclude": [
     "node_modules"

@@ -7,6 +7,7 @@ const arch = os.arch();
 export const ipfsPath = path.join(
   __dirname,
   '..',
+  '..',
   'bin',
   platform,
   arch,
