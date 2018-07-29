@@ -1,0 +1,15 @@
+{
+  "name": "go-ipfs-wrapper",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "tsc": "tsc"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^10.5.4",
+    "typescript": "^2.9.2"
+  }
+}
