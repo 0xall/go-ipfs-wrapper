@@ -12,10 +12,7 @@ export class IpfsProcess extends EventEmitter {
   }
 
   run(): void {
-    if (this._daemon) {
-      this._daemon.kill();
-      this._daemon = null;
-    }
+    this.kill();
 
     this._init()
       .then(() => {
@@ -23,9 +20,25 @@ export class IpfsProcess extends EventEmitter {
 
       this._daemon.on('exit', (code) => this.emit('exit', code));
       this._daemon.on('error', err => this.emit('error', err));
-      setImmediate(() => this.emit('start'));
+
+      // if the process prints "Daemon is ready", it's now ready to interact with ipfs.
+      let out = '';
+      this._daemon.stdout.on('data', data => {
+        out = out.concat(data.toString());
+        if (out.indexOf('Daemon is ready') > 0) {
+          this._daemon.stdout.removeAllListeners('data');
+          this.emit('start');
+        }
+      });
     })
       .catch(err => this.emit('error', err));
+  }
+
+  kill(): void {
+    if (this._daemon) {
+      this._daemon.kill();
+      this._daemon = null;
+    }
   }
 
   private _init(): Promise<void> {
