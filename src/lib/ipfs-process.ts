@@ -8,6 +8,11 @@ export class IpfsProcess extends EventEmitter {
   private _daemon: ChildProcess = null;
   private static IpfsExecutablePath: string = ipfsPath;
 
+  public static ERROR = {
+    CANNOT_ACQUIRE_LOCK: 0,         // already other ipfs used the directory
+    USED_PORT: 1,                   // port used from other process
+  };
+
   constructor(private _ipfsPath: string) {
     super();
   }
@@ -28,11 +33,28 @@ export class IpfsProcess extends EventEmitter {
 
       // if the process prints "Daemon is ready", it's now ready to interact with ipfs.
       let out = '';
+      let err = '';
       this._daemon.stdout.on('data', data => {
         out = out.concat(data.toString());
+
+        // if daemon is ready,
         if (out.indexOf('Daemon is ready') > 0) {
           this._daemon.stdout.removeAllListeners('data');
           this.emit('start');
+        }
+      });
+
+      this._daemon.stderr.on('data', data => {
+        err = err.concat(data.toString());
+
+        if (err.indexOf('cannot acquire lock') > 0) {
+          this._daemon.stderr.removeAllListeners('data');
+          this.emit('error', IpfsProcess.ERROR.CANNOT_ACQUIRE_LOCK);
+        }
+
+        else if (err.indexOf('failed to listen on any addresses') > 0) {
+          this._daemon.stderr.removeAllListeners('data');
+          this.emit('error', IpfsProcess.ERROR.USED_PORT);
         }
       });
     })

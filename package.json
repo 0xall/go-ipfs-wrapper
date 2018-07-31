@@ -17,6 +17,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^10.5.4",
+    "chai": "^4.1.2",
     "mocha": "^5.2.0",
     "typescript": "^2.9.2"
   },

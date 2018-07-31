@@ -4,11 +4,12 @@ const {IpfsProcess} = require('../dist');
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
+const should = require('chai').should();
 
 describe("go-ipfs process", function() {
 
   // set timeout to 15 seconds because it generally takes over 2000ms to ready ipfs daemon.
-  this.timeout(15000);
+  this.timeout(30000);
 
   it('should start ipfs process', done => {
     const p = new IpfsProcess('./.testipfs');
@@ -19,21 +20,20 @@ describe("go-ipfs process", function() {
     p.run();
   });
 
-  it('should change directory', done => {
-  	const platform = os.platform();
-  	fs.copyFileSync(
-  		path.join(__dirname, '..', 'bin', os.platform(), os.arch(), (platform === 'win32')? 'ipfs.exe' : 'ipfs'),
-		  path.join(__dirname, (platform === 'win32')?  'ipfs.exe' : 'ipfs')
-	  );
+  it('should emit acquire lock event', done => {
+    const p1 = new IpfsProcess('./.testipfs');
+    p1.on('start', () => {
+      const p2 = new IpfsProcess('./.testipfs');
+      p2.on('error', err => {
+        err.should.be.equals(IpfsProcess.ERROR.CANNOT_ACQUIRE_LOCK);
+        p1.kill();
+        p2.kill();
+        done();
+      });
 
-    IpfsProcess.setIpfsPath(path.join(__dirname, 'ipfs'));
-	  const p = new IpfsProcess('./.testipfs');
-	  p.on('start', () => {
-		  p.kill();
+      p2.run();
+    });
 
-		  fs.unlinkSync(path.join(__dirname, (platform === 'win32')? 'ipfs.exe' : 'ipfs'));
-		  done();
-	  });
-	  p.run();
-  })
+    p1.run();
+  });
 });
