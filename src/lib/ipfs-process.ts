@@ -6,9 +6,14 @@ import { EventEmitter } from 'events';
 
 export class IpfsProcess extends EventEmitter {
   private _daemon: ChildProcess = null;
+  private static IpfsExecutablePath: string = ipfsPath;
 
   constructor(private _ipfsPath: string) {
     super();
+  }
+
+  static setIpfsPath(path: string): void {
+    this.IpfsExecutablePath = path;
   }
 
   run(): void {
@@ -16,7 +21,7 @@ export class IpfsProcess extends EventEmitter {
 
     this._init()
       .then(() => {
-      this._daemon = spawn(ipfsPath, ['daemon'], { env: this._localEnv });
+      this._daemon = spawn(IpfsProcess.IpfsExecutablePath, ['daemon'], { env: this._localEnv });
 
       this._daemon.on('exit', (code) => this.emit('exit', code));
       this._daemon.on('error', err => this.emit('error', err));
@@ -46,7 +51,7 @@ export class IpfsProcess extends EventEmitter {
       if (!fs.existsSync(this._ipfsPath)) {
         // if ipfs directory does not exists,
         // create a new ipfs directory
-        const ipfsProc = spawn(ipfsPath, ['init'], { env: this._localEnv });
+        const ipfsProc = spawn(IpfsProcess.IpfsExecutablePath, ['init'], { env: this._localEnv });
 
         ipfsProc.on('exit', code => {
           if (code === 0) {
