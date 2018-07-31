@@ -1,7 +1,13 @@
 {
   "name": "go-ipfs-wrapper",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "description": "Executing go-ipfs in javascript.",
+  "keywords": [
+    "ipfs",
+    "goipfs",
+    "go-ipfs",
+    "wrapper"
+  ],
   "main": "dist/index",
   "typings": "dist/index",
   "scripts": {
