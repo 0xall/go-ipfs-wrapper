@@ -4,7 +4,7 @@ const {IpfsProcess} = require('../dist');
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
-const should = require('chai').should();
+const assert = require('chai').assert;
 
 describe("go-ipfs process", function() {
 
@@ -25,7 +25,7 @@ describe("go-ipfs process", function() {
     p1.on('start', () => {
       const p2 = new IpfsProcess('./.testipfs');
       p2.on('error', err => {
-        err.should.be.equals(IpfsProcess.ERROR.CANNOT_ACQUIRE_LOCK);
+        assert(err === IpfsProcess.ERROR.CANNOT_ACQUIRE_LOCK || err === IpfsProcess.ERROR.IPFS_RUNNING);
         p1.kill();
         p2.kill();
         done();
