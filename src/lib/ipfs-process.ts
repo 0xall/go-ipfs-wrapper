@@ -11,6 +11,7 @@ export class IpfsProcess extends EventEmitter {
   public static ERROR = {
     CANNOT_ACQUIRE_LOCK: 0,         // already other ipfs used the directory
     USED_PORT: 1,                   // port used from other process
+    IPFS_RUNNING: 2,                // ipfs is running
   };
 
   constructor(private _ipfsPath: string) {
@@ -52,9 +53,14 @@ export class IpfsProcess extends EventEmitter {
           this.emit('error', IpfsProcess.ERROR.CANNOT_ACQUIRE_LOCK);
         }
 
-        else if (err.indexOf('failed to listen on any addresses') > 0) {
+        else if (err.indexOf('failed to listen on any addresses') > 0 || err.indexOf('address already in use') > 0) {
           this._daemon.stderr.removeAllListeners('data');
           this.emit('error', IpfsProcess.ERROR.USED_PORT);
+        }
+
+        else if (err.indexOf('ipfs daemon is running') > 0) {
+          this._daemon.stderr.removeAllListeners('data');
+          this.emit('error', IpfsProcess.ERROR.IPFS_RUNNING);
         }
       });
     })
